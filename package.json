@@ -1,0 +1,21 @@
+
+{
+  "name": "gear-yui",
+  "version": "0.0.1",
+  "description": "Build YUI with Gear.js",
+  "author": "Stephen Murphy <stephen@hypernaut.com>",
+  "keywords": ["gear", "task", "build", "yui"],
+  "repository": {"type": "git", "url": "http://github.com/twobit/gear-yui.git"},
+  "bugs": {"url": "http://github.com/twobit/gear-yui/issues"},
+  "main": "index",
+  "dependencies": {
+      "gear": ">= 0.7.0"
+  },
+  "devDependencies": {
+      "should": "0.6.x",
+      "mocha": "1.0.x"
+  },
+  "bin": {
+      "gear-yui": "bin/gear-yui.js"
+  }
+}
