@@ -12,14 +12,14 @@ registry = new Registry({dirname: path.resolve(__dirname, '../', 'node_modules',
 function build(comp) {
     var cwd = process.cwd(),
         dest = path.resolve(cwd, comp.dest, comp.name),
-        sources;
+        filenames;
 
-    sources = comp.source.map(function(filename) {
-        return path.resolve(cwd, filename);
+    filenames = comp.js.map(function(filename) {
+        return path.resolve(cwd, "js", filename);
     });
 
     new Queue({registry: registry})
-        .read(sources)
+        .read(filenames)
         .jslint({callback: function(linted) {
             console.log(linted);
         }})
