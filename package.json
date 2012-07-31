@@ -1,6 +1,6 @@
 {
   "name": "gear-yui",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Build YUI with Gear.js",
   "author": "Stephen Murphy <stephen@hypernaut.com>",
   "keywords": ["gear", "task", "build", "yui"],

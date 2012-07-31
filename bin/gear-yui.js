@@ -21,8 +21,12 @@ function build(comp) {
     new Queue({registry: registry})
         .read(filenames)
         .jslint({callback: function(linted) {
-            console.log(linted);
-        }})
+            var messages = linted.jslint || [];
+            console.error(linted.name + ' - ' + messages.length + ' lint errors:');
+            messages.forEach(function(message) {
+                console.error('    ' + message);
+            });
+        }, sloppy: true, white: true, nomen: true, predef: ['Y']})
         .concat({callback: function(blob) {
             var prefix = "YUI.add('" + comp.name + "', function(Y) {\n\n",
                 postfix = "\n\n\n}, '@VERSION@' ," + JSON.stringify(comp.config) + ");";
@@ -30,7 +34,7 @@ function build(comp) {
             return prefix + blob.result + postfix;
         }})
         .write(dest + '-debug.js')
-        //.replace()
+        .replace({regex: /Y.log\(.+?\);?/mg}) // Strip Y.log's
         .write(dest + '.js')
         .jsminify()
         .write(dest + '-min.js')
