@@ -1,14 +1,57 @@
 #!/usr/bin/env node
 
-var Queue = require('gear').Queue,
+var BUILD_FILE = 'build.json',
+    fs = require('fs'),
+    path = require('path'),
+    Queue = require('gear').Queue,
     Registry = require('gear').Registry,
-    registry = new Registry({module: 'gear-lib'});
+    registry;
 
-console.log('hi');
+registry = new Registry({dirname: path.resolve(__dirname, '../', 'node_modules', 'gear-lib', 'lib')});
 
-/*
-registry.load({filename: 'yui.js'});
+function build(comp) {
+    var cwd = process.cwd(),
+        dest = path.resolve(cwd, comp.dest, comp.name),
+        sources;
 
-new Queue({registry: registry})
-    .read('')
-    .inspect();*/
+    sources = comp.source.map(function(filename) {
+        return path.resolve(cwd, filename);
+    });
+
+    new Queue({registry: registry})
+        .read(sources)
+        .jslint({callback: function(linted) {
+            console.log(linted);
+        }})
+        .concat({callback: function(blob) {
+            var prefix = "YUI.add('" + comp.name + "', function(Y) {\n\n",
+                postfix = "\n\n\n}, '@VERSION@' ," + JSON.stringify(comp.config) + ");";
+
+            return prefix + blob.result + postfix;
+        }})
+        .write(dest + '-debug.js')
+        //.replace()
+        .write(dest + '.js')
+        .jsminify()
+        .write(dest + '-min.js')
+        .run(function(err, result) {
+            if (err) {
+                console.err(err);
+            }
+        });
+}
+
+function main() {
+    fs.readFile(BUILD_FILE, function(err, data) {
+        if (err) {
+            console.error('Failed to find ' + BUILD_FILE + ' file');
+            return;
+        }
+
+        JSON.parse(data).forEach(function(component) {
+            build(component);
+        });
+    });
+}
+
+main();
